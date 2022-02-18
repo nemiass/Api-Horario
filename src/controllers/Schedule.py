@@ -31,7 +31,7 @@ class Schedule(Resource):
 
         response_profesor = response.json()
 
-        horarios_de_profesor = Horario.query.filter_by(id_profesor=response_profesor["id"]).all()
+        horarios_de_profesor = Horario.query.filter_by(id_profesor=response_profesor["user"]["id"]).all()
         res = {"estado": True, "profesor": response_profesor["user"], "horario": []}
         cs = CursoSchema(only=("nombre", "ciclo"))
         for horario_profesor in horarios_de_profesor:
