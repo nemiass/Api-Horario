@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse
 from flask import request, jsonify
 from src.models.Models import Horario, Curso, db
-from src.models.schemas import curso_schema, cursos_schema, horario_schema, horarios_schema
+from src.models.schemas import curso_schema, cursos_schema, horario_schema, horarios_schema, CursoSchema
 import requests
 
 
@@ -18,7 +18,7 @@ class Schedule(Resource):
 
         # Horarios de un docente en especifico
         # Peticion al ENDPOINT del servicio de decente para traer al docente por id_usuario
-        endpoint_servicio_profesor = "http://localhost:8000/api/docentes/user"
+        endpoint_servicio_profesor = "http://54.176.78.122:5000/api/docentes/user"
         url = f"{endpoint_servicio_profesor}/{id}"
         response = requests.get(url)
 
@@ -32,10 +32,11 @@ class Schedule(Resource):
         response_profesor = response.json()
 
         horarios_de_profesor = Horario.query.filter_by(id_profesor=id).all()
-        res = {"profesor": response_profesor["user"], "horario": []}
+        res = {"estado": True, "profesor": response_profesor["user"], "horario": []}
+        cs = CursoSchema(only=("nombre", "ciclo"))
         for horario_profesor in horarios_de_profesor:
             res["horario"] \
-                .append(horario_schema.dump(horario_profesor) | curso_schema.dump(horario_profesor.curso))
+                .append(horario_schema.dump(horario_profesor) | cs.dump(horario_profesor.curso))
 
         return jsonify(res)
 

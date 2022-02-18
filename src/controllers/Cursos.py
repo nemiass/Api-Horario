@@ -37,4 +37,3 @@ class Cursos(Resource):
 
         return res
         
-
